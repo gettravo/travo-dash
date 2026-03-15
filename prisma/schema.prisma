@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Api {
+  id                 String     @id @default(cuid())
+  name               String
+  slug               String     @unique
+  category           String
+  logoUrl            String?
+  baseUrl            String
+  checkUrl           String
+  checkMethod        String     @default("GET")
+  expectedStatus     Int        @default(200)
+  latencyThresholdMs Int        @default(3000)
+  errorRateThreshold Float      @default(0.2)
+  isActive           Boolean    @default(true)
+  metrics            Metric[]
+  incidents          Incident[]
+}
+
+model Metric {
+  id         String   @id @default(cuid())
+  apiId      String
+  timestamp  DateTime @default(now())
+  latencyMs  Int
+  statusCode Int
+  success    Boolean
+  api        Api      @relation(fields: [apiId], references: [id])
+
+  @@index([apiId, timestamp])
+}
+
+model Incident {
+  id         String    @id @default(cuid())
+  apiId      String
+  startedAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  type       String
+  severity   String
+  message    String
+  api        Api       @relation(fields: [apiId], references: [id])
+}
+
+model UserStack {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  apiSlugs  String[]
+  updatedAt DateTime @updatedAt
+}
