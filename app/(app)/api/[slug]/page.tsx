@@ -36,8 +36,8 @@ export default async function ApiDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <Link href="/" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
-        ← Back to dashboard
+      <Link href="/services" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+        ← Back to Services
       </Link>
 
       <ApiHeader

@@ -54,3 +54,15 @@ model UserStack {
   apiSlugs  String[]
   updatedAt DateTime @updatedAt
 }
+
+model AlertSettings {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  emailEnabled   Boolean  @default(false)
+  email          String?
+  webhookEnabled Boolean  @default(false)
+  webhookUrl     String?
+  hooktapEnabled Boolean  @default(false)
+  hooktapId      String?
+  updatedAt      DateTime @updatedAt
+}

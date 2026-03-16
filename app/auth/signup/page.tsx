@@ -34,7 +34,7 @@ export default function SignupPage() {
 
   if (done) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <p className="text-green-400 font-medium">Check your email to confirm your account.</p>
           <Link href="/auth/login" className="text-sm text-gray-500 hover:text-gray-300 mt-2 block">
@@ -46,7 +46,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-bold text-white mb-6">Create account</h1>
 

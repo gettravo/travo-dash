@@ -142,5 +142,15 @@ export async function getIncidentsForApi(slug: string) {
   })
 }
 
+export async function getRecentIncidents(limit = 20) {
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  return prisma.incident.findMany({
+    where: { startedAt: { gte: since } },
+    orderBy: { startedAt: 'desc' },
+    take: limit,
+    include: { api: { select: { name: true, slug: true, category: true } } },
+  })
+}
+
 export type ApiWithStatus = Awaited<ReturnType<typeof getAllApisWithStatus>>[number]
 export type ApiDetail = Awaited<ReturnType<typeof getApiDetail>>
