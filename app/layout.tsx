@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Travo — API Health Monitor',
   description: 'Real-time status, latency, and uptime for developer APIs.',
+  icons: { icon: '/icon.png' },
 }
 
 export default function RootLayout({

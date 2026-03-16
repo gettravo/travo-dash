@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -11,7 +12,6 @@ import {
   Settings,
   LogOut,
   ChevronRight,
-  Activity,
 } from 'lucide-react'
 
 interface User {
@@ -41,13 +41,14 @@ export default function Sidebar({ user }: Props) {
     <aside className="w-60 flex-shrink-0 flex flex-col bg-gray-950 border-r border-white/8 h-screen">
       {/* Logo */}
       <div className="h-14 flex items-center px-5 border-b border-white/8">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
-            <Activity className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-base font-bold text-white tracking-tight">
-            travo<span className="text-blue-400">.</span>
-          </span>
+        <Link href="/dashboard">
+          <Image
+            src="/whitelogo.png"
+            alt="Travo"
+            width={88}
+            height={22}
+            priority
+          />
         </Link>
       </div>
 

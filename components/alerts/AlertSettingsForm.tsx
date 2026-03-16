@@ -62,7 +62,7 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
       <IntegrationCard
         icon={<Mail className="w-5 h-5 text-blue-400" />}
         title="Email"
-        description="Get notified by email when incidents are detected. Powered by Maileroo."
+        description="Get notified by email when incidents are detected."
         enabled={settings.emailEnabled ?? false}
         onToggle={(v) => update({ emailEnabled: v })}
       >
@@ -218,8 +218,8 @@ function IntegrationCard({
           }`}
         >
           <span
-            className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-              enabled ? 'translate-x-5' : 'translate-x-0.5'
+            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+              enabled ? 'translate-x-5' : 'translate-x-0'
             }`}
           />
         </button>
