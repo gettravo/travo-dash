@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { User, Key, Download, BarChart3, ExternalLink } from 'lucide-react'
+import PasswordChangeForm from '@/components/settings/PasswordChangeForm'
+import DeleteAccountButton from '@/components/settings/DeleteAccountButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +14,8 @@ export default async function SettingsPage() {
   } = await supabase.auth.getUser()
 
   if (!user) redirect('/auth/login')
+
+  const isOAuthUser = user.app_metadata?.provider === 'google'
 
   return (
     <div className="space-y-8">
@@ -30,20 +34,37 @@ export default async function SettingsPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-white">{user.email}</p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Member since {new Date(user.created_at).toLocaleDateString()}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs text-gray-500">
+                  Member since {new Date(user.created_at).toLocaleDateString()}
+                </p>
+                {isOAuthUser && (
+                  <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full border border-white/8">
+                    Google
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Change Password — only for email/password users */}
+      {!isOAuthUser && (
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+            Change Password
+          </h2>
+          <div className="bg-gray-900 border border-white/10 rounded-xl p-5">
+            <PasswordChangeForm />
+          </div>
+        </section>
+      )}
+
       {/* Developer */}
       <section className="space-y-4">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Developer</h2>
-
         <div className="space-y-3">
-          {/* Status API */}
           <div className="bg-gray-900 border border-white/10 rounded-xl p-5">
             <div className="flex items-start gap-3">
               <Key className="w-5 h-5 text-purple-400 mt-0.5 flex-shrink-0" />
@@ -65,7 +86,6 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          {/* Data Export */}
           <div className="bg-gray-900 border border-white/10 rounded-xl p-5">
             <div className="flex items-start gap-3">
               <Download className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
@@ -88,7 +108,6 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          {/* SLA Reports — coming soon */}
           <div className="bg-gray-900/50 border border-white/5 rounded-xl p-5 opacity-60">
             <div className="flex items-start gap-3">
               <BarChart3 className="w-5 h-5 text-orange-400 mt-0.5 flex-shrink-0" />
@@ -108,7 +127,7 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      {/* Alert settings shortcut */}
+      {/* Notifications shortcut */}
       <section className="space-y-4">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
           Notifications
@@ -127,17 +146,22 @@ export default async function SettingsPage() {
       {/* Danger zone */}
       <section className="space-y-4">
         <h2 className="text-sm font-semibold text-red-400/70 uppercase tracking-wider">
-          Account Actions
+          Danger Zone
         </h2>
-        <div className="bg-gray-900 border border-red-900/30 rounded-xl p-5">
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="text-sm text-red-400 hover:text-red-300 transition-colors"
-            >
-              Sign out of all devices
-            </button>
-          </form>
+        <div className="bg-gray-900 border border-red-900/30 rounded-xl p-5 space-y-4">
+          <div>
+            <form action="/auth/signout" method="post">
+              <button
+                type="submit"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Sign out of all devices
+              </button>
+            </form>
+          </div>
+          <div className="border-t border-red-900/20 pt-4">
+            <DeleteAccountButton />
+          </div>
         </div>
       </section>
     </div>
