@@ -13,7 +13,11 @@ import {
   LogOut,
   ChevronRight,
   Users,
+  CreditCard,
+  Crown,
+  Zap,
 } from 'lucide-react'
+import { useRevenueCat } from '@/components/billing/RevenueCatProvider'
 
 interface User {
   email?: string | null
@@ -35,6 +39,7 @@ const navItems = [
 
 export default function Sidebar({ user }: Props) {
   const pathname = usePathname()
+  const { isPro, isLoading } = useRevenueCat()
 
   const isActive = (href: string) =>
     pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
@@ -75,6 +80,28 @@ export default function Sidebar({ user }: Props) {
           )
         })}
 
+        {/* Billing */}
+        <Link
+          href="/billing"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            isActive('/billing')
+              ? 'bg-white/10 text-white'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <CreditCard className="w-4 h-4 flex-shrink-0" />
+          Billing
+          {!isLoading && isPro && (
+            <span className="ml-auto flex items-center gap-1 text-xs text-accent-400 bg-accent-600/15 border border-accent-600/25 px-1.5 py-0.5 rounded-full">
+              <Crown className="w-2.5 h-2.5" />
+              Pro
+            </span>
+          )}
+          {isActive('/billing') && !isPro && (
+            <ChevronRight className="w-3 h-3 ml-auto text-gray-500" />
+          )}
+        </Link>
+
         <div className="pt-4 mt-4 border-t border-white/8">
           <Link
             href="/settings"
@@ -86,9 +113,23 @@ export default function Sidebar({ user }: Props) {
           >
             <Settings className="w-4 h-4 flex-shrink-0" />
             Settings
+            {isActive('/settings') && <ChevronRight className="w-3 h-3 ml-auto text-gray-500" />}
           </Link>
         </div>
       </nav>
+
+      {/* Upgrade CTA — shown only to free users */}
+      {!isLoading && !isPro && (
+        <div className="px-3 pb-3">
+          <Link
+            href="/billing"
+            className="flex items-center gap-2 w-full bg-accent-600/10 hover:bg-accent-600/20 border border-accent-600/20 text-accent-300 text-xs font-medium px-3 py-2.5 rounded-lg transition-colors"
+          >
+            <Zap className="w-3.5 h-3.5 flex-shrink-0" />
+            Upgrade to Pro
+          </Link>
+        </div>
+      )}
 
       {/* User footer */}
       <div className="px-3 py-4 border-t border-white/8">
