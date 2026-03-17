@@ -142,8 +142,8 @@ export async function getIncidentsForApi(slug: string) {
   })
 }
 
-export async function getRecentIncidents(limit = 20) {
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+export async function getRecentIncidents(limit = 20, days = 7) {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
   return prisma.incident.findMany({
     where: { startedAt: { gte: since } },
     orderBy: { startedAt: 'desc' },

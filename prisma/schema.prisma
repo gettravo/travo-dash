@@ -32,6 +32,7 @@ model Metric {
   latencyMs  Int
   statusCode Int
   success    Boolean
+  region     String?
   api        Api      @relation(fields: [apiId], references: [id])
 
   @@index([apiId, timestamp])
@@ -51,18 +52,55 @@ model Incident {
 model UserStack {
   id        String   @id @default(cuid())
   userId    String   @unique
+  name      String?
   apiSlugs  String[]
+  teamId    String?
   updatedAt DateTime @updatedAt
+  team      Team?    @relation(fields: [teamId], references: [id])
 }
 
 model AlertSettings {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  emailEnabled   Boolean  @default(false)
-  email          String?
-  webhookEnabled Boolean  @default(false)
-  webhookUrl     String?
-  hooktapEnabled Boolean  @default(false)
-  hooktapId      String?
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  emailEnabled     Boolean  @default(false)
+  email            String?
+  webhookEnabled   Boolean  @default(false)
+  webhookUrl       String?
+  hooktapEnabled   Boolean  @default(false)
+  hooktapId        String?
+  notifyDowntime   Boolean  @default(true)
+  notifyLatency    Boolean  @default(true)
+  notifyErrorRate  Boolean  @default(true)
+  notifyResolved   Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  name      String
+  createdAt DateTime     @default(now())
+  members   TeamMember[]
+  stacks    UserStack[]
+  invites   TeamInvite[]
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String
+  role     String   @default("member")
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id])
+
+  @@unique([teamId, userId])
+}
+
+model TeamInvite {
+  id        String   @id @default(cuid())
+  teamId    String
+  email     String
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  team      Team     @relation(fields: [teamId], references: [id])
 }

@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  Users,
 } from 'lucide-react'
 
 interface User {
@@ -29,6 +30,7 @@ const navItems = [
   { href: '/stack', label: 'My Stack', icon: Layers },
   { href: '/incidents', label: 'Incidents', icon: AlertTriangle },
   { href: '/alerts', label: 'Alerts', icon: Bell },
+  { href: '/team', label: 'Team', icon: Users },
 ]
 
 export default function Sidebar({ user }: Props) {

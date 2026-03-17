@@ -35,14 +35,13 @@ export default async function StackPage() {
       </div>
 
       {savedSlugs.length > 0 ? (
-        <StackDashboard initialApis={stackApis} />
+        <StackDashboard initialApis={stackApis} stackName={userStack?.name} />
       ) : (
         <>
           <p className="text-sm text-gray-500">
-            You haven't set up your stack yet. Auto-detect from a GitHub repo or pick
-            manually.
+            You haven't set up your stack yet. Auto-detect from a GitHub repo or pick manually.
           </p>
-          <StackSetup initialSlugs={[]} allApis={allApis} />
+          <StackSetup initialSlugs={[]} initialName={null} allApis={allApis} />
         </>
       )}
     </div>

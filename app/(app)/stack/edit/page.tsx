@@ -37,7 +37,11 @@ export default async function StackEditPage() {
         </p>
       </div>
 
-      <StackSetup initialSlugs={savedSlugs} allApis={allApis} />
+      <StackSetup
+        initialSlugs={savedSlugs}
+        initialName={userStack?.name}
+        allApis={allApis}
+      />
     </div>
   )
 }

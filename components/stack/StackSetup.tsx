@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Github, Loader2, ChevronDown } from 'lucide-react'
 import type { ApiWithStatus } from '@/lib/queries'
+import type { GitHubRepo } from '@/lib/stack-detector'
 
 const ALL_APIS = [
   { slug: 'openai', name: 'OpenAI', category: 'AI' },
   { slug: 'anthropic', name: 'Anthropic', category: 'AI' },
   { slug: 'huggingface', name: 'HuggingFace', category: 'AI' },
   { slug: 'replicate', name: 'Replicate', category: 'AI' },
+  { slug: 'openrouter', name: 'OpenRouter', category: 'AI' },
   { slug: 'stripe', name: 'Stripe', category: 'Payments' },
   { slug: 'braintree', name: 'Braintree', category: 'Payments' },
   { slug: 'paypal', name: 'PayPal', category: 'Payments' },
@@ -35,14 +38,18 @@ const ALL_APIS = [
 
 interface Props {
   initialSlugs: string[]
+  initialName?: string | null
   allApis: ApiWithStatus[]
+  onSave?: () => void
+  redirectTo?: string
 }
 
 type Tab = 'detect' | 'manual'
 
-export default function StackSetup({ initialSlugs, allApis }: Props) {
+export default function StackSetup({ initialSlugs, initialName, allApis, onSave, redirectTo }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('detect')
+  const [stackName, setStackName] = useState(initialName ?? '')
   const [repoUrl, setRepoUrl] = useState('')
   const [detecting, setDetecting] = useState(false)
   const [detectError, setDetectError] = useState<string | null>(null)
@@ -50,6 +57,22 @@ export default function StackSetup({ initialSlugs, allApis }: Props) {
   const [detectedSources, setDetectedSources] = useState<Record<string, string[]>>({})
   const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set(initialSlugs))
   const [saving, setSaving] = useState(false)
+  const [githubRepos, setGithubRepos] = useState<GitHubRepo[]>([])
+  const [loadingRepos, setLoadingRepos] = useState(false)
+  const [showRepoDropdown, setShowRepoDropdown] = useState(false)
+
+  useEffect(() => {
+    if (tab === 'detect') {
+      setLoadingRepos(true)
+      fetch('/api-routes/detect-stack')
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.hasToken && data.repos) setGithubRepos(data.repos)
+        })
+        .catch(() => {})
+        .finally(() => setLoadingRepos(false))
+    }
+  }, [tab])
 
   async function handleDetect() {
     setDetecting(true)
@@ -69,13 +92,19 @@ export default function StackSetup({ initialSlugs, allApis }: Props) {
       }
       setDetectedSlugs(data.slugs)
       setDetectedSources(data.sources)
-      // Pre-select all detected slugs (merging with existing)
       setSelectedSlugs((prev) => new Set([...prev, ...data.slugs]))
+      if (data.repoName && !stackName) setStackName(data.repoName)
     } catch {
       setDetectError('Network error — please try again')
     } finally {
       setDetecting(false)
     }
+  }
+
+  function selectRepo(repo: GitHubRepo) {
+    setRepoUrl(`https://github.com/${repo.fullName}`)
+    setShowRepoDropdown(false)
+    if (!stackName) setStackName(repo.name)
   }
 
   function toggleSlug(slug: string) {
@@ -92,10 +121,17 @@ export default function StackSetup({ initialSlugs, allApis }: Props) {
       await fetch('/api-routes/stack', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiSlugs: Array.from(selectedSlugs) }),
+        body: JSON.stringify({
+          apiSlugs: Array.from(selectedSlugs),
+          name: stackName.trim() || null,
+        }),
       })
-      router.push('/stack')
-      router.refresh()
+      if (onSave) {
+        onSave()
+      } else {
+        router.push(redirectTo ?? '/stack')
+        router.refresh()
+      }
     } finally {
       setSaving(false)
     }
@@ -105,6 +141,21 @@ export default function StackSetup({ initialSlugs, allApis }: Props) {
 
   return (
     <div className="space-y-8 max-w-3xl">
+      {/* Stack name */}
+      <div>
+        <label className="block text-sm text-gray-400 mb-1.5">Stack name</label>
+        <input
+          type="text"
+          value={stackName}
+          onChange={(e) => setStackName(e.target.value)}
+          placeholder="My Stack"
+          className="w-full max-w-sm bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
+        />
+        <p className="text-xs text-gray-600 mt-1">
+          Give your stack a name, or leave blank for "My Stack".
+        </p>
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-900 border border-white/10 rounded-lg p-1 w-fit">
         {(['detect', 'manual'] as Tab[]).map((t) => (
@@ -127,21 +178,52 @@ export default function StackSetup({ initialSlugs, allApis }: Props) {
         <div className="space-y-5">
           <div>
             <p className="text-sm text-gray-400 mb-3">
-              Paste a public GitHub repository URL. Travo will scan{' '}
-              <code className="text-blue-400 text-xs">package.json</code>,{' '}
-              <code className="text-blue-400 text-xs">requirements.txt</code>,{' '}
-              <code className="text-blue-400 text-xs">Pipfile</code>,{' '}
-              <code className="text-blue-400 text-xs">Gemfile</code>, and more to detect
-              which APIs your project uses.
+              Paste a GitHub repository URL — Travo scans your dependency files to detect
+              which APIs your project uses. Works with public and private repos.
             </p>
             <div className="flex gap-2">
-              <input
-                type="url"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                placeholder="https://github.com/owner/repo"
-                className="flex-1 bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              />
+              <div className="relative flex-1">
+                <input
+                  type="url"
+                  value={repoUrl}
+                  onChange={(e) => setRepoUrl(e.target.value)}
+                  placeholder="https://github.com/owner/repo"
+                  className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 pr-10"
+                />
+                {githubRepos.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRepoDropdown((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                  >
+                    {loadingRepos ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+                {showRepoDropdown && githubRepos.length > 0 && (
+                  <div className="absolute top-full mt-1 w-full bg-gray-900 border border-white/10 rounded-lg shadow-xl z-10 max-h-48 overflow-y-auto">
+                    {githubRepos.map((repo) => (
+                      <button
+                        key={repo.fullName}
+                        type="button"
+                        onClick={() => selectRepo(repo)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-white/5 text-gray-300"
+                      >
+                        <Github className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+                        <span className="truncate">{repo.fullName}</span>
+                        {repo.isPrivate && (
+                          <span className="ml-auto text-xs text-gray-600 bg-gray-800 px-1.5 py-0.5 rounded flex-shrink-0">
+                            Private
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 onClick={handleDetect}
                 disabled={detecting || !repoUrl.trim()}
@@ -242,7 +324,7 @@ export default function StackSetup({ initialSlugs, allApis }: Props) {
           disabled={saving || selectedSlugs.size === 0}
           className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
         >
-          {saving ? 'Saving…' : 'Save My Stack'}
+          {saving ? 'Saving…' : 'Save Stack'}
         </button>
       </div>
     </div>

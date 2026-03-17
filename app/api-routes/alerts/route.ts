@@ -23,7 +23,18 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { emailEnabled, email, webhookEnabled, webhookUrl, hooktapEnabled, hooktapId } = body
+  const {
+    emailEnabled,
+    email,
+    webhookEnabled,
+    webhookUrl,
+    hooktapEnabled,
+    hooktapId,
+    notifyDowntime,
+    notifyLatency,
+    notifyErrorRate,
+    notifyResolved,
+  } = body
 
   const settings = await prisma.alertSettings.upsert({
     where: { userId: user.id },
@@ -35,6 +46,10 @@ export async function POST(req: NextRequest) {
       webhookUrl: webhookUrl ?? null,
       hooktapEnabled: hooktapEnabled ?? false,
       hooktapId: hooktapId ?? null,
+      notifyDowntime: notifyDowntime ?? true,
+      notifyLatency: notifyLatency ?? true,
+      notifyErrorRate: notifyErrorRate ?? true,
+      notifyResolved: notifyResolved ?? true,
     },
     update: {
       emailEnabled: emailEnabled ?? false,
@@ -43,6 +58,10 @@ export async function POST(req: NextRequest) {
       webhookUrl: webhookUrl ?? null,
       hooktapEnabled: hooktapEnabled ?? false,
       hooktapId: hooktapId ?? null,
+      notifyDowntime: notifyDowntime ?? true,
+      notifyLatency: notifyLatency ?? true,
+      notifyErrorRate: notifyErrorRate ?? true,
+      notifyResolved: notifyResolved ?? true,
     },
   })
 

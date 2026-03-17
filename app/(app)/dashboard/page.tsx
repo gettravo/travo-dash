@@ -3,13 +3,18 @@ import { getApiStatus } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { Activity, AlertTriangle, CheckCircle, XCircle, Layers, ChevronRight } from 'lucide-react'
+import { Activity, AlertTriangle, CheckCircle, XCircle, Layers, ChevronRight, PartyPopper } from 'lucide-react'
 import StatusOverviewBanner from '@/components/dashboard/StatusOverviewBanner'
 import { formatTimeAgo } from '@/lib/utils'
 
 export const revalidate = 30
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>
+}) {
+  const { welcome } = await searchParams
   const supabase = await createClient()
   const {
     data: { user },
@@ -35,6 +40,12 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {welcome === '1' && (
+        <div className="flex items-center gap-3 bg-green-950/40 border border-green-800/50 rounded-xl px-5 py-3 animate-fade-in">
+          <PartyPopper className="w-5 h-5 text-green-400 flex-shrink-0" />
+          <p className="text-sm text-green-300 font-medium">You're all set! Travo is now monitoring your stack.</p>
+        </div>
+      )}
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
         <p className="text-gray-500 mt-1">Overview of all monitored APIs and active incidents.</p>

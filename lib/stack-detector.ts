@@ -5,17 +5,20 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   '@openai/openai': 'openai',
   anthropic: 'anthropic',
   '@anthropic-ai/sdk': 'anthropic',
+  '@anthropic-ai/claude-code': 'anthropic',
   '@huggingface/inference': 'huggingface',
   huggingface_hub: 'huggingface',
   transformers: 'huggingface',
   replicate: 'replicate',
+  openrouter: 'openrouter',
+  '@openrouter/ai-sdk-provider': 'openrouter',
 
   // Payments
   stripe: 'stripe',
   braintree: 'braintree',
   'paypal-rest-sdk': 'paypal',
   '@paypal/checkout-server-sdk': 'paypal',
-  'paypalrestsdk': 'paypal',
+  paypalrestsdk: 'paypal',
 
   // DevTools
   '@octokit/rest': 'github',
@@ -81,13 +84,13 @@ function normalise(name: string): string {
 }
 
 function matchPackage(name: string): string | null {
-  // Try exact match first, then normalised
   return PACKAGE_SLUG_MAP[name] ?? PACKAGE_SLUG_MAP[normalise(name)] ?? null
 }
 
 export interface DetectionResult {
   slugs: string[]
   sources: Record<string, string[]> // slug → package names that triggered it
+  repoName?: string
 }
 
 // --- Parsers ---
@@ -146,7 +149,6 @@ function parseGoMod(content: string): string[] {
   for (const line of content.split('\n')) {
     const match = line.trim().match(/^([^\s]+)\s+v/)
     if (match && !match[1].startsWith('//')) {
-      // Extract last path segment as the recognisable name
       packages.push(match[1].split('/').pop() ?? match[1])
     }
   }
@@ -174,20 +176,45 @@ const FILE_PARSERS: Array<{
   { path: 'composer.json', parser: parseComposerJson },
 ]
 
-// Fetch a raw file from GitHub, trying main then master branch
+// Fetch a raw file from GitHub — supports public (raw.githubusercontent.com) and
+// private repos (GitHub Contents API with token)
 async function fetchGitHubFile(
   owner: string,
   repo: string,
-  filePath: string
+  filePath: string,
+  token?: string | null
 ): Promise<string | null> {
   for (const branch of ['main', 'master']) {
     try {
-      const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'Travo-StackDetector/1.0' },
-        signal: AbortSignal.timeout(5000),
-      })
-      if (res.ok) return res.text()
+      let url: string
+      let headers: Record<string, string> = {
+        'User-Agent': 'Travo-StackDetector/1.0',
+      }
+
+      if (token) {
+        // GitHub Contents API — works for both public and private repos
+        url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`
+        headers['Authorization'] = `Bearer ${token}`
+        headers['Accept'] = 'application/vnd.github.v3+json'
+
+        const res = await fetch(url, {
+          headers,
+          signal: AbortSignal.timeout(5000),
+        })
+        if (!res.ok) continue
+        const data = await res.json()
+        if (data.content) {
+          return Buffer.from(data.content, 'base64').toString('utf-8')
+        }
+      } else {
+        // Public repos via raw URL
+        url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`
+        const res = await fetch(url, {
+          headers,
+          signal: AbortSignal.timeout(5000),
+        })
+        if (res.ok) return res.text()
+      }
     } catch {
       // try next branch
     }
@@ -201,7 +228,10 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string } | n
   return { owner: match[1], repo: match[2].replace(/\.git$/, '') }
 }
 
-export async function detectStackFromGitHub(repoUrl: string): Promise<DetectionResult> {
+export async function detectStackFromGitHub(
+  repoUrl: string,
+  token?: string | null
+): Promise<DetectionResult> {
   const parsed = parseGitHubUrl(repoUrl)
   if (!parsed) return { slugs: [], sources: {} }
 
@@ -210,7 +240,7 @@ export async function detectStackFromGitHub(repoUrl: string): Promise<DetectionR
 
   await Promise.all(
     FILE_PARSERS.map(async ({ path, parser }) => {
-      const content = await fetchGitHubFile(owner, repo, path)
+      const content = await fetchGitHubFile(owner, repo, path, token)
       if (!content) return
 
       const packages = parser(content)
@@ -224,5 +254,38 @@ export async function detectStackFromGitHub(repoUrl: string): Promise<DetectionR
     })
   )
 
-  return { slugs: Object.keys(sources), sources }
+  return { slugs: Object.keys(sources), sources, repoName: repo }
+}
+
+export interface GitHubRepo {
+  name: string
+  fullName: string
+  isPrivate: boolean
+  updatedAt: string
+}
+
+export async function listGitHubRepos(token: string): Promise<GitHubRepo[]> {
+  try {
+    const res = await fetch(
+      'https://api.github.com/user/repos?per_page=100&sort=updated&affiliation=owner,collaborator',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'User-Agent': 'Travo-StackDetector/1.0',
+          Accept: 'application/vnd.github.v3+json',
+        },
+        signal: AbortSignal.timeout(8000),
+      }
+    )
+    if (!res.ok) return []
+    const repos = await res.json()
+    return repos.map((r: { name: string; full_name: string; private: boolean; updated_at: string }) => ({
+      name: r.name,
+      fullName: r.full_name,
+      isPrivate: r.private,
+      updatedAt: r.updated_at,
+    }))
+  } catch {
+    return []
+  }
 }
