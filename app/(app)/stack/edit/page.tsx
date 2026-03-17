@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { getAllApisWithStatus } from '@/lib/queries'
+import { checkIsPro } from '@/lib/plan'
 import StackSetup from '@/components/stack/StackSetup'
 
 export const dynamic = 'force-dynamic'
@@ -15,9 +16,10 @@ export default async function StackEditPage() {
 
   if (!user) redirect('/auth/login')
 
-  const [userStack, allApis] = await Promise.all([
+  const [userStack, allApis, isPro] = await Promise.all([
     prisma.userStack.findUnique({ where: { userId: user.id } }),
     getAllApisWithStatus(),
+    checkIsPro(user.id),
   ])
 
   const savedSlugs = userStack?.apiSlugs ?? []
@@ -41,6 +43,7 @@ export default async function StackEditPage() {
         initialSlugs={savedSlugs}
         initialName={userStack?.name}
         allApis={allApis}
+        isPro={isPro}
       />
     </div>
   )

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { detectStackFromGitHub, listGitHubRepos, parseGitHubUrl } from '@/lib/stack-detector'
+import { checkIsPro } from '@/lib/plan'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,10 +17,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid GitHub URL' }, { status: 400 })
     }
 
-    // Use provider_token for private repo access if available
+    // Use provider_token for private repo access if Pro
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const isPro = user ? await checkIsPro(user.id) : false
     const { data: { session } } = await supabase.auth.getSession()
-    const token = session?.provider_token ?? null
+    const token = isPro ? (session?.provider_token ?? null) : null
 
     const result = await detectStackFromGitHub(url, token)
     return NextResponse.json(result)
@@ -37,7 +40,8 @@ export async function GET() {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { data: { session } } = await supabase.auth.getSession()
-    const token = session?.provider_token
+    const isPro = user ? await checkIsPro(user.id) : false
+    const token = isPro ? session?.provider_token : undefined
 
     if (!token) {
       return NextResponse.json({ repos: [], hasToken: false })

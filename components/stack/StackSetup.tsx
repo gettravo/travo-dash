@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Github, Loader2, ChevronDown } from 'lucide-react'
+import { Github, Loader2, ChevronDown, Crown } from 'lucide-react'
+import Link from 'next/link'
 import type { ApiWithStatus } from '@/lib/queries'
 import type { GitHubRepo } from '@/lib/stack-detector'
+
+const FREE_STACK_LIMIT = 5
 
 const ALL_APIS = [
   { slug: 'openai', name: 'OpenAI', category: 'AI' },
@@ -42,11 +45,12 @@ interface Props {
   allApis: ApiWithStatus[]
   onSave?: () => void
   redirectTo?: string
+  isPro?: boolean
 }
 
 type Tab = 'detect' | 'manual'
 
-export default function StackSetup({ initialSlugs, initialName, allApis, onSave, redirectTo }: Props) {
+export default function StackSetup({ initialSlugs, initialName, allApis, onSave, redirectTo, isPro = false }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('detect')
   const [stackName, setStackName] = useState(initialName ?? '')
@@ -310,18 +314,33 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
 
       {/* Selected count + save */}
       <div className="flex items-center justify-between pt-4 border-t border-white/10">
-        <p className="text-sm text-gray-500">
-          {selectedSlugs.size > 0 ? (
-            <>
-              <span className="text-white font-medium">{selectedSlugs.size}</span> APIs selected
-            </>
-          ) : (
-            'No APIs selected'
+        <div className="space-y-1">
+          <p className="text-sm text-gray-500">
+            {selectedSlugs.size > 0 ? (
+              <>
+                <span className="text-white font-medium">{selectedSlugs.size}</span> APIs selected
+              </>
+            ) : (
+              'No APIs selected'
+            )}
+            {!isPro && (
+              <span className={`ml-2 text-xs ${selectedSlugs.size > FREE_STACK_LIMIT ? 'text-red-400' : 'text-gray-600'}`}>
+                ({selectedSlugs.size} / {FREE_STACK_LIMIT} free plan limit)
+              </span>
+            )}
+          </p>
+          {!isPro && selectedSlugs.size > FREE_STACK_LIMIT && (
+            <p className="text-xs text-red-400 flex items-center gap-1.5">
+              <Crown className="w-3 h-3" />
+              Free plan is limited to {FREE_STACK_LIMIT} APIs.{' '}
+              <Link href="/billing" className="underline hover:text-red-300">Upgrade to Pro</Link>
+              {' '}for unlimited.
+            </p>
           )}
-        </p>
+        </div>
         <button
           onClick={handleSave}
-          disabled={saving || selectedSlugs.size === 0}
+          disabled={saving || selectedSlugs.size === 0 || (!isPro && selectedSlugs.size > FREE_STACK_LIMIT)}
           className="bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
         >
           {saving ? 'Saving…' : 'Save Stack'}

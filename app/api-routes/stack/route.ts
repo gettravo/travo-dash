@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/request-auth'
 import { prisma } from '@/lib/prisma'
+import { checkIsPro, FREE_STACK_LIMIT } from '@/lib/plan'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +22,14 @@ export async function POST(req: Request) {
 
     if (!Array.isArray(apiSlugs)) {
       return NextResponse.json({ error: 'apiSlugs must be an array' }, { status: 400 })
+    }
+
+    const isPro = await checkIsPro(user.id)
+    if (!isPro && apiSlugs.length > FREE_STACK_LIMIT) {
+      return NextResponse.json(
+        { error: `Free plan is limited to ${FREE_STACK_LIMIT} APIs. Upgrade to Pro for unlimited.`, code: 'LIMIT_STACK' },
+        { status: 403 }
+      )
     }
 
     const stack = await prisma.userStack.upsert({

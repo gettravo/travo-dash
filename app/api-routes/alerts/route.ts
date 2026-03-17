@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/request-auth'
 import { prisma } from '@/lib/prisma'
+import { checkIsPro } from '@/lib/plan'
 
 export async function GET(req: Request) {
   const user = await getUserFromRequest(req)
@@ -30,16 +31,23 @@ export async function POST(req: Request) {
     notifyResolved,
   } = body
 
+  const isPro = await checkIsPro(user.id)
+  // Free users can only use email alerts — force advanced channels off
+  const effectiveWebhookEnabled = isPro ? (webhookEnabled ?? false) : false
+  const effectiveWebhookUrl = isPro ? (webhookUrl ?? null) : null
+  const effectiveHooktapEnabled = isPro ? (hooktapEnabled ?? false) : false
+  const effectiveHooktapId = isPro ? (hooktapId ?? null) : null
+
   const settings = await prisma.alertSettings.upsert({
     where: { userId: user.id },
     create: {
       userId: user.id,
       emailEnabled: emailEnabled ?? false,
       email: email ?? null,
-      webhookEnabled: webhookEnabled ?? false,
-      webhookUrl: webhookUrl ?? null,
-      hooktapEnabled: hooktapEnabled ?? false,
-      hooktapId: hooktapId ?? null,
+      webhookEnabled: effectiveWebhookEnabled,
+      webhookUrl: effectiveWebhookUrl,
+      hooktapEnabled: effectiveHooktapEnabled,
+      hooktapId: effectiveHooktapId,
       notifyDowntime: notifyDowntime ?? true,
       notifyLatency: notifyLatency ?? true,
       notifyErrorRate: notifyErrorRate ?? true,
@@ -48,10 +56,10 @@ export async function POST(req: Request) {
     update: {
       emailEnabled: emailEnabled ?? false,
       email: email ?? null,
-      webhookEnabled: webhookEnabled ?? false,
-      webhookUrl: webhookUrl ?? null,
-      hooktapEnabled: hooktapEnabled ?? false,
-      hooktapId: hooktapId ?? null,
+      webhookEnabled: effectiveWebhookEnabled,
+      webhookUrl: effectiveWebhookUrl,
+      hooktapEnabled: effectiveHooktapEnabled,
+      hooktapId: effectiveHooktapId,
       notifyDowntime: notifyDowntime ?? true,
       notifyLatency: notifyLatency ?? true,
       notifyErrorRate: notifyErrorRate ?? true,

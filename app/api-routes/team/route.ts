@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { checkIsPro } from '@/lib/plan'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,6 +33,14 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const isPro = await checkIsPro(user.id)
+  if (!isPro) {
+    return NextResponse.json(
+      { error: 'Teams are a Pro feature. Upgrade to create or join teams.', code: 'LIMIT_TEAMS' },
+      { status: 403 }
+    )
+  }
 
   // Check if already in a team
   const existing = await prisma.teamMember.findFirst({ where: { userId: user.id } })

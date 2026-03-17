@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { getAllApisWithStatus } from '@/lib/queries'
+import { checkIsPro } from '@/lib/plan'
 import StackDashboard from '@/components/stack/StackDashboard'
 import StackSetup from '@/components/stack/StackSetup'
 
@@ -15,9 +16,10 @@ export default async function StackPage() {
 
   if (!user) redirect('/auth/login')
 
-  const [userStack, allApis] = await Promise.all([
+  const [userStack, allApis, isPro] = await Promise.all([
     prisma.userStack.findUnique({ where: { userId: user.id } }),
     getAllApisWithStatus(),
+    checkIsPro(user.id),
   ])
 
   const savedSlugs = userStack?.apiSlugs ?? []
@@ -41,7 +43,7 @@ export default async function StackPage() {
           <p className="text-sm text-gray-500">
             You haven't set up your stack yet. Auto-detect from a GitHub repo or pick manually.
           </p>
-          <StackSetup initialSlugs={[]} initialName={null} allApis={allApis} />
+          <StackSetup initialSlugs={[]} initialName={null} allApis={allApis} isPro={isPro} />
         </>
       )}
     </div>

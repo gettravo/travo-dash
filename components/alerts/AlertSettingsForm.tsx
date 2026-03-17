@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, Mail, Globe, Smartphone, CheckCircle, Loader2, ExternalLink, Send, AlertTriangle, Activity, Zap, RotateCcw } from 'lucide-react'
+import { Bell, Mail, Globe, Smartphone, CheckCircle, Loader2, ExternalLink, Send, AlertTriangle, Activity, Zap, RotateCcw, Crown } from 'lucide-react'
+import Link from 'next/link'
 
 interface AlertSettingsData {
   emailEnabled?: boolean
@@ -18,7 +19,7 @@ interface AlertSettingsData {
 
 type TestState = 'idle' | 'loading' | 'sent' | 'error'
 
-export default function AlertSettingsForm({ userId }: { userId: string }) {
+export default function AlertSettingsForm({ userId, isPro = false }: { userId: string; isPro?: boolean }) {
   const [settings, setSettings] = useState<AlertSettingsData>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -160,29 +161,30 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
       </IntegrationCard>
 
       {/* Webhook */}
-      <IntegrationCard
-        icon={<Globe className="w-5 h-5 text-purple-400" />}
-        title="Webhook"
-        description="POST incident data to your own endpoint. Works with n8n, Zapier, Make, or any HTTP endpoint."
-        enabled={settings.webhookEnabled ?? false}
-        onToggle={(v) => update({ webhookEnabled: v })}
-        onTest={() => handleTest('webhook')}
-        testState={testStates['webhook'] ?? 'idle'}
-        testReady={!!settings.webhookUrl}
-      >
-        <label className="block">
-          <span className="text-xs text-gray-500 mb-1.5 block">Webhook URL</span>
-          <input
-            type="url"
-            value={settings.webhookUrl ?? ''}
-            onChange={(e) => update({ webhookUrl: e.target.value })}
-            placeholder="https://your-service.com/webhook"
-            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/20"
-          />
-        </label>
-        <div className="mt-3 bg-gray-800/60 border border-white/8 rounded-lg p-3 text-xs text-gray-500">
-          <p className="font-medium text-gray-400 mb-1">Payload format</p>
-          <pre className="font-mono text-gray-500 overflow-auto">{`{
+      {isPro ? (
+        <IntegrationCard
+          icon={<Globe className="w-5 h-5 text-purple-400" />}
+          title="Webhook"
+          description="POST incident data to your own endpoint. Works with n8n, Zapier, Make, or any HTTP endpoint."
+          enabled={settings.webhookEnabled ?? false}
+          onToggle={(v) => update({ webhookEnabled: v })}
+          onTest={() => handleTest('webhook')}
+          testState={testStates['webhook'] ?? 'idle'}
+          testReady={!!settings.webhookUrl}
+        >
+          <label className="block">
+            <span className="text-xs text-gray-500 mb-1.5 block">Webhook URL</span>
+            <input
+              type="url"
+              value={settings.webhookUrl ?? ''}
+              onChange={(e) => update({ webhookUrl: e.target.value })}
+              placeholder="https://your-service.com/webhook"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/20"
+            />
+          </label>
+          <div className="mt-3 bg-gray-800/60 border border-white/8 rounded-lg p-3 text-xs text-gray-500">
+            <p className="font-medium text-gray-400 mb-1">Payload format</p>
+            <pre className="font-mono text-gray-500 overflow-auto">{`{
   "type": "incident",
   "api": "openai",
   "severity": "critical",
@@ -190,51 +192,66 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
   "resolved": false,
   "startedAt": "2024-01-01T00:00:00Z"
 }`}</pre>
-        </div>
-      </IntegrationCard>
+          </div>
+        </IntegrationCard>
+      ) : (
+        <ProGateCard
+          icon={<Globe className="w-5 h-5 text-purple-400" />}
+          title="Webhook"
+          description="POST incident data to your own endpoint. Works with n8n, Zapier, Make, or any HTTP endpoint."
+        />
+      )}
 
       {/* HookTap */}
-      <IntegrationCard
-        icon={<Smartphone className="w-5 h-5 text-green-400" />}
-        title="HookTap — iPhone Push Notifications"
-        description="Receive instant iPhone push notifications via HookTap. Get alerts directly on your lock screen or Dynamic Island."
-        enabled={settings.hooktapEnabled ?? false}
-        onToggle={(v) => update({ hooktapEnabled: v })}
-        onTest={() => handleTest('hooktap')}
-        testState={testStates['hooktap'] ?? 'idle'}
-        testReady={!!settings.hooktapId}
-        badge={
-          <a
-            href="https://hooktap.me"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-green-400 hover:text-green-300"
-          >
-            hooktap.me <ExternalLink className="w-3 h-3" />
-          </a>
-        }
-      >
-        <label className="block">
-          <span className="text-xs text-gray-500 mb-1.5 block">HookTap Hook ID</span>
-          <input
-            type="text"
-            value={settings.hooktapId ?? ''}
-            onChange={(e) => update({ hooktapId: e.target.value })}
-            placeholder="YOUR_HOOK_ID"
-            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 font-mono focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20"
-          />
-        </label>
-        <p className="mt-2 text-xs text-gray-600">
-          Install HookTap from the App Store and find your Hook ID in the app settings.
-        </p>
-        <div className="mt-3 bg-gray-800/60 border border-white/8 rounded-lg p-3 text-xs text-gray-500">
-          <p className="font-medium text-gray-400 mb-1">How it works</p>
-          <p>
-            When an incident is detected, Travo sends a push notification to your iPhone via{' '}
-            <code className="text-green-400">hooks.hooktap.me/webhook/{'<YOUR_HOOK_ID>'}</code>
+      {isPro ? (
+        <IntegrationCard
+          icon={<Smartphone className="w-5 h-5 text-green-400" />}
+          title="HookTap — iPhone Push Notifications"
+          description="Receive instant iPhone push notifications via HookTap. Get alerts directly on your lock screen or Dynamic Island."
+          enabled={settings.hooktapEnabled ?? false}
+          onToggle={(v) => update({ hooktapEnabled: v })}
+          onTest={() => handleTest('hooktap')}
+          testState={testStates['hooktap'] ?? 'idle'}
+          testReady={!!settings.hooktapId}
+          badge={
+            <a
+              href="https://hooktap.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-green-400 hover:text-green-300"
+            >
+              hooktap.me <ExternalLink className="w-3 h-3" />
+            </a>
+          }
+        >
+          <label className="block">
+            <span className="text-xs text-gray-500 mb-1.5 block">HookTap Hook ID</span>
+            <input
+              type="text"
+              value={settings.hooktapId ?? ''}
+              onChange={(e) => update({ hooktapId: e.target.value })}
+              placeholder="YOUR_HOOK_ID"
+              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 font-mono focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20"
+            />
+          </label>
+          <p className="mt-2 text-xs text-gray-600">
+            Install HookTap from the App Store and find your Hook ID in the app settings.
           </p>
-        </div>
-      </IntegrationCard>
+          <div className="mt-3 bg-gray-800/60 border border-white/8 rounded-lg p-3 text-xs text-gray-500">
+            <p className="font-medium text-gray-400 mb-1">How it works</p>
+            <p>
+              When an incident is detected, Travo sends a push notification to your iPhone via{' '}
+              <code className="text-green-400">hooks.hooktap.me/webhook/{'<YOUR_HOOK_ID>'}</code>
+            </p>
+          </div>
+        </IntegrationCard>
+      ) : (
+        <ProGateCard
+          icon={<Smartphone className="w-5 h-5 text-green-400" />}
+          title="HookTap — iPhone Push Notifications"
+          description="Receive instant iPhone push notifications via HookTap. Get alerts directly on your lock screen or Dynamic Island."
+        />
+      )}
 
       {/* Coming soon */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -393,6 +410,41 @@ function IntegrationCard({
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+function ProGateCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <div className="bg-gray-900/50 border border-white/10 rounded-xl p-5 opacity-70">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5">{icon}</div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-white">{title}</h3>
+              <span className="flex items-center gap-1 text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
+                <Crown className="w-3 h-3" /> Pro
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5 max-w-md">{description}</p>
+          </div>
+        </div>
+        <Link
+          href="/billing"
+          className="flex-shrink-0 text-xs text-accent-400 hover:text-accent-300 font-medium"
+        >
+          Upgrade →
+        </Link>
+      </div>
     </div>
   )
 }

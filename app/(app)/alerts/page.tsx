@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { checkIsPro } from '@/lib/plan'
 import AlertSettingsForm from '@/components/alerts/AlertSettingsForm'
 
 export const dynamic = 'force-dynamic'
@@ -12,6 +13,8 @@ export default async function AlertsPage() {
 
   if (!user) redirect('/auth/login')
 
+  const isPro = await checkIsPro(user.id)
+
   return (
     <div className="space-y-8">
       <div>
@@ -21,7 +24,7 @@ export default async function AlertsPage() {
         </p>
       </div>
 
-      <AlertSettingsForm userId={user.id} />
+      <AlertSettingsForm userId={user.id} isPro={isPro} />
     </div>
   )
 }
