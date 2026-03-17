@@ -13,7 +13,7 @@ export default async function OnboardingAlertsPage() {
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Progress bar */}
       <div className="h-1 bg-gray-900">
-        <div className="h-full w-full bg-blue-600 transition-all duration-500" />
+        <div className="h-full w-full bg-accent-600 transition-all duration-500" />
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">

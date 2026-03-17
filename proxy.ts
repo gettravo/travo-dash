@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED_PATHS = ['/stack', '/alerts', '/settings', '/onboarding', '/team']
+const PUBLIC_PATHS = ['/auth', '/admin']
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -28,13 +28,12 @@ export async function proxy(request: NextRequest) {
   // Refresh session
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Auth guard for protected routes
   const { pathname } = request.nextUrl
-  const isProtected = PROTECTED_PATHS.some(
+  const isPublic = PUBLIC_PATHS.some(
     (p) => pathname === p || pathname.startsWith(p + '/')
   )
 
-  if (isProtected && !user) {
+  if (!isPublic && !user) {
     const loginUrl = new URL('/auth/login', request.url)
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)

@@ -5,6 +5,17 @@
   --foreground: #f9fafb;
 }
 
+@theme {
+  --color-accent-300: #ffaaab;
+  --color-accent-400: #ff8485;
+  --color-accent-500: #ff6e6f;
+  --color-accent-600: #FF5657;
+  --color-accent-700: #e63e3f;
+  --color-accent-800: #7a2424;
+  --color-accent-900: #3d1010;
+  --color-accent-950: #1c0808;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

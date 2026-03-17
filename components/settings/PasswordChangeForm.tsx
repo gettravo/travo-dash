@@ -68,7 +68,7 @@ export default function PasswordChangeForm() {
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
           required
-          className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50"
           placeholder="••••••••"
         />
       </div>
@@ -80,7 +80,7 @@ export default function PasswordChangeForm() {
           onChange={(e) => setNext(e.target.value)}
           required
           minLength={6}
-          className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50"
           placeholder="Min. 6 characters"
         />
       </div>
@@ -91,7 +91,7 @@ export default function PasswordChangeForm() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           required
-          className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50"
           placeholder="••••••••"
         />
       </div>
@@ -101,7 +101,7 @@ export default function PasswordChangeForm() {
       <button
         type="submit"
         disabled={loading}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
       >
         {loading ? (
           <Loader2 className="w-4 h-4 animate-spin" />

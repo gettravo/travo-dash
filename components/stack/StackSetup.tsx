@@ -149,7 +149,7 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
           value={stackName}
           onChange={(e) => setStackName(e.target.value)}
           placeholder="My Stack"
-          className="w-full max-w-sm bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
+          className="w-full max-w-sm bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500"
         />
         <p className="text-xs text-gray-600 mt-1">
           Give your stack a name, or leave blank for "My Stack".
@@ -164,7 +164,7 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
             onClick={() => setTab(t)}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
               tab === t
-                ? 'bg-blue-600 text-white'
+                ? 'bg-accent-600 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -188,7 +188,7 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
                   value={repoUrl}
                   onChange={(e) => setRepoUrl(e.target.value)}
                   placeholder="https://github.com/owner/repo"
-                  className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 pr-10"
+                  className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent-500 pr-10"
                 />
                 {githubRepos.length > 0 && (
                   <button
@@ -227,7 +227,7 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
               <button
                 onClick={handleDetect}
                 disabled={detecting || !repoUrl.trim()}
-                className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                className="bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
                 {detecting ? 'Scanning…' : 'Detect'}
               </button>
@@ -258,12 +258,12 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
                           title={detectedSources[slug]?.join(', ')}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${
                             checked
-                              ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+                              ? 'bg-accent-600/20 border-accent-500 text-accent-300'
                               : 'bg-gray-800 border-white/10 text-gray-500 line-through'
                           }`}
                         >
                           <span
-                            className={`w-1.5 h-1.5 rounded-full ${checked ? 'bg-blue-400' : 'bg-gray-600'}`}
+                            className={`w-1.5 h-1.5 rounded-full ${checked ? 'bg-accent-400' : 'bg-gray-600'}`}
                           />
                           {api?.name ?? slug}
                         </button>
@@ -294,7 +294,7 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
                       onClick={() => toggleSlug(api.slug)}
                       className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                         checked
-                          ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+                          ? 'bg-accent-600/20 border-accent-500 text-accent-300'
                           : 'bg-gray-900 border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
                       }`}
                     >
@@ -322,7 +322,7 @@ export default function StackSetup({ initialSlugs, initialName, allApis, onSave,
         <button
           onClick={handleSave}
           disabled={saving || selectedSlugs.size === 0}
-          className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
+          className="bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
         >
           {saving ? 'Saving…' : 'Save Stack'}
         </button>

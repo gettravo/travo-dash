@@ -83,7 +83,7 @@ export default function ServiceGrid({ initialApis }: Props) {
             placeholder="Search services..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-gray-900 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+            className="w-full bg-gray-900 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/20"
           />
         </div>
 
@@ -95,7 +95,7 @@ export default function ServiceGrid({ initialApis }: Props) {
               onClick={() => setStatusFilter(f)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 statusFilter === f
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-accent-600 text-white'
                   : 'bg-gray-900 border border-white/10 text-gray-400 hover:text-white hover:border-white/20'
               }`}
             >
@@ -108,7 +108,7 @@ export default function ServiceGrid({ initialApis }: Props) {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-gray-900 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-400 focus:outline-none focus:border-blue-500/50"
+          className="bg-gray-900 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-400 focus:outline-none focus:border-accent-500/50"
         >
           {categories.map((c) => (
             <option key={c} value={c}>
@@ -143,7 +143,7 @@ export default function ServiceGrid({ initialApis }: Props) {
               setStatusFilter('All')
               setCategoryFilter('All')
             }}
-            className="mt-3 text-xs text-blue-400 hover:text-blue-300 underline"
+            className="mt-3 text-xs text-accent-400 hover:text-accent-300 underline"
           >
             Clear filters
           </button>

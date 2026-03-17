@@ -54,7 +54,7 @@ export default async function DashboardPage({
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          icon={<Activity className="w-5 h-5 text-blue-400" />}
+          icon={<Activity className="w-5 h-5 text-accent-400" />}
           label="Total APIs"
           value={apis.length}
           color="blue"
@@ -89,7 +89,7 @@ export default async function DashboardPage({
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
               Recent Incidents
             </h2>
-            <Link href="/incidents" className="text-xs text-blue-400 hover:text-blue-300">
+            <Link href="/incidents" className="text-xs text-accent-400 hover:text-accent-300">
               View all →
             </Link>
           </div>
@@ -143,7 +143,7 @@ export default async function DashboardPage({
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
               My Stack
             </h2>
-            <Link href="/stack" className="text-xs text-blue-400 hover:text-blue-300">
+            <Link href="/stack" className="text-xs text-accent-400 hover:text-accent-300">
               Manage →
             </Link>
           </div>
@@ -153,7 +153,7 @@ export default async function DashboardPage({
               <p className="text-sm text-gray-400 mb-3">Sign in to monitor your personal stack</p>
               <Link
                 href="/auth/login"
-                className="text-xs text-blue-400 hover:text-blue-300 underline"
+                className="text-xs text-accent-400 hover:text-accent-300 underline"
               >
                 Sign in
               </Link>
@@ -164,7 +164,7 @@ export default async function DashboardPage({
               <p className="text-sm text-gray-400 mb-3">No APIs in your stack yet</p>
               <Link
                 href="/stack/edit"
-                className="text-xs text-blue-400 hover:text-blue-300 underline"
+                className="text-xs text-accent-400 hover:text-accent-300 underline"
               >
                 Set up your stack →
               </Link>
@@ -230,7 +230,7 @@ function StatCard({
   color: 'blue' | 'green' | 'yellow' | 'red'
 }) {
   const border = {
-    blue: 'border-blue-800/30',
+    blue: 'border-accent-800/30',
     green: 'border-green-800/30',
     yellow: 'border-yellow-800/30',
     red: 'border-red-800/30',

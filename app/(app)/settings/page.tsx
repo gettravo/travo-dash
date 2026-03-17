@@ -29,8 +29,8 @@ export default async function SettingsPage() {
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Account</h2>
         <div className="bg-gray-900 border border-white/10 rounded-xl p-5">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-600/30 flex items-center justify-center">
-              <User className="w-5 h-5 text-blue-400" />
+            <div className="w-10 h-10 rounded-full bg-accent-600/20 border border-accent-600/30 flex items-center justify-center">
+              <User className="w-5 h-5 text-accent-400" />
             </div>
             <div>
               <p className="text-sm font-medium text-white">{user.email}</p>
@@ -99,7 +99,7 @@ export default async function SettingsPage() {
                     href="/api-routes/status"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-gray-800 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-accent-400 hover:text-accent-300 bg-gray-800 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     Export status JSON <ExternalLink className="w-3 h-3" />
                   </a>
@@ -135,7 +135,7 @@ export default async function SettingsPage() {
         <div className="bg-gray-900 border border-white/10 rounded-xl p-5">
           <p className="text-sm text-gray-400">
             Configure email, webhook, and HookTap notifications in{' '}
-            <Link href="/alerts" className="text-blue-400 hover:text-blue-300">
+            <Link href="/alerts" className="text-accent-400 hover:text-accent-300">
               Alert Settings
             </Link>
             .

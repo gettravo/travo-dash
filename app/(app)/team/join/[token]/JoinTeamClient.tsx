@@ -24,7 +24,7 @@ export default function JoinTeamClient({ token, inviteData }: Props) {
       <div className="text-center">
         <p className="text-red-400 font-medium mb-2">Invalid or expired invite</p>
         <p className="text-sm text-gray-500">{inviteData.error}</p>
-        <a href="/dashboard" className="text-sm text-blue-400 hover:text-blue-300 mt-4 block">
+        <a href="/dashboard" className="text-sm text-accent-400 hover:text-accent-300 mt-4 block">
           Go to dashboard →
         </a>
       </div>
@@ -55,8 +55,8 @@ export default function JoinTeamClient({ token, inviteData }: Props) {
   return (
     <div className="bg-gray-900 border border-white/10 rounded-xl p-6 space-y-5">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-600/30 flex items-center justify-center">
-          <Users className="w-6 h-6 text-blue-400" />
+        <div className="w-12 h-12 rounded-xl bg-accent-600/20 border border-accent-600/30 flex items-center justify-center">
+          <Users className="w-6 h-6 text-accent-400" />
         </div>
         <div>
           <h1 className="text-lg font-bold text-white">{inviteData.teamName}</h1>
@@ -74,7 +74,7 @@ export default function JoinTeamClient({ token, inviteData }: Props) {
         <button
           onClick={handleJoin}
           disabled={joining}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
         >
           {joining && <Loader2 className="w-4 h-4 animate-spin" />}
           Join team

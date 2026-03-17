@@ -138,7 +138,7 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
 
       {/* Email */}
       <IntegrationCard
-        icon={<Mail className="w-5 h-5 text-blue-400" />}
+        icon={<Mail className="w-5 h-5 text-accent-400" />}
         title="Email"
         description="Get notified by email when incidents are detected."
         enabled={settings.emailEnabled ?? false}
@@ -154,7 +154,7 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
             value={settings.email ?? ''}
             onChange={(e) => update({ email: e.target.value })}
             placeholder="you@example.com"
-            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/20"
           />
         </label>
       </IntegrationCard>
@@ -177,7 +177,7 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
             value={settings.webhookUrl ?? ''}
             onChange={(e) => update({ webhookUrl: e.target.value })}
             placeholder="https://your-service.com/webhook"
-            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+            className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/20"
           />
         </label>
         <div className="mt-3 bg-gray-800/60 border border-white/8 rounded-lg p-3 text-xs text-gray-500">
@@ -247,7 +247,7 @@ export default function AlertSettingsForm({ userId }: { userId: string }) {
         <button
           type="submit"
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
         >
           {saving ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -289,7 +289,7 @@ function TriggerToggle({
         type="button"
         onClick={() => onToggle(!enabled)}
         className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-colors ${
-          enabled ? 'bg-blue-600' : 'bg-gray-700'
+          enabled ? 'bg-accent-600' : 'bg-gray-700'
         }`}
       >
         <span
@@ -328,7 +328,7 @@ function IntegrationCard({
   return (
     <div
       className={`bg-gray-900 border rounded-xl p-5 transition-colors ${
-        enabled ? 'border-blue-800/50' : 'border-white/10'
+        enabled ? 'border-accent-800/50' : 'border-white/10'
       }`}
     >
       <div className="flex items-start justify-between gap-4 mb-4">
@@ -346,7 +346,7 @@ function IntegrationCard({
           type="button"
           onClick={() => onToggle(!enabled)}
           className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-colors ${
-            enabled ? 'bg-blue-600' : 'bg-gray-700'
+            enabled ? 'bg-accent-600' : 'bg-gray-700'
           }`}
         >
           <span

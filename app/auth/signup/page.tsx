@@ -10,8 +10,8 @@ const FEATURES = [
     icon: Activity,
     title: 'Monitor 26+ APIs in real-time',
     description: 'OpenAI, Stripe, GitHub, Vercel, Supabase and more — all in one dashboard.',
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10 border-blue-500/20',
+    color: 'text-accent-400',
+    bg: 'bg-accent-500/10 border-accent-500/20',
   },
   {
     icon: Bell,
@@ -99,7 +99,7 @@ export default function SignupPage() {
                 We sent a confirmation link to <strong className="text-white">{email}</strong>.
                 Click it to activate your account.
               </p>
-              <Link href="/auth/login" className="text-sm text-blue-400 hover:text-blue-300">
+              <Link href="/auth/login" className="text-sm text-accent-400 hover:text-accent-300">
                 Back to sign in →
               </Link>
             </div>
@@ -138,7 +138,7 @@ export default function SignupPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accent-500"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -150,7 +150,7 @@ export default function SignupPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accent-500"
                     placeholder="Min. 6 characters"
                   />
                 </div>
@@ -158,7 +158,7 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors"
+                  className="w-full bg-accent-600 hover:bg-accent-500 disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors"
                 >
                   {loading ? 'Creating account…' : 'Create account'}
                 </button>
@@ -166,7 +166,7 @@ export default function SignupPage() {
 
               <p className="text-sm text-gray-500 mt-5 text-center">
                 Already have an account?{' '}
-                <Link href="/auth/login" className="text-blue-400 hover:text-blue-300">
+                <Link href="/auth/login" className="text-accent-400 hover:text-accent-300">
                   Sign in
                 </Link>
               </p>
@@ -176,7 +176,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right — feature panel */}
-      <div className="hidden md:flex flex-1 flex-col justify-center relative overflow-hidden bg-gradient-to-br from-blue-950 via-gray-900 to-gray-950">
+      <div className="hidden md:flex flex-1 flex-col justify-center relative overflow-hidden bg-gradient-to-br from-accent-950 via-gray-900 to-gray-950">
         {/* Ambient glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,_rgba(59,130,246,0.12),_transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_80%,_rgba(139,92,246,0.08),_transparent_60%)]" />
@@ -193,14 +193,14 @@ export default function SignupPage() {
 
         <div className="relative z-10 px-12 py-16">
           <div className="mb-10">
-            <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-3 py-1 mb-4">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse-slow" />
-              <span className="text-xs text-blue-400 font-medium">Live monitoring</span>
+            <div className="inline-flex items-center gap-2 bg-accent-500/10 border border-accent-500/20 rounded-full px-3 py-1 mb-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse-slow" />
+              <span className="text-xs text-accent-400 font-medium">Live monitoring</span>
             </div>
             <h2 className="text-3xl font-bold text-white leading-tight">
               Know when your APIs
               <br />
-              <span className="text-blue-400">go down</span> before your users do.
+              <span className="text-accent-400">go down</span> before your users do.
             </h2>
           </div>
 

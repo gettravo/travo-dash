@@ -13,7 +13,7 @@ export default async function Navbar() {
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-lg font-bold text-white tracking-tight">
-              travo<span className="text-blue-400">.</span>
+              travo<span className="text-accent-400">.</span>
             </span>
           </Link>
 
@@ -46,7 +46,7 @@ export default async function Navbar() {
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md transition-colors"
+                  className="text-sm bg-accent-600 hover:bg-accent-500 text-white px-3 py-1.5 rounded-md transition-colors"
                 >
                   Sign up
                 </Link>
