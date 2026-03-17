@@ -33,6 +33,12 @@ export async function proxy(request: NextRequest) {
     (p) => pathname === p || pathname.startsWith(p + '/')
   )
 
+  // Mobile clients send Bearer token — let API routes through, the route itself handles auth
+  const hasBearerToken = request.headers.get('authorization')?.startsWith('Bearer ')
+  if (pathname.startsWith('/api-routes/') && hasBearerToken) {
+    return supabaseResponse
+  }
+
   if (!isPublic && !user) {
     const loginUrl = new URL('/auth/login', request.url)
     loginUrl.searchParams.set('next', pathname)
