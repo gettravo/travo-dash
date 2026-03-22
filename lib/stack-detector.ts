@@ -18,6 +18,14 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   mistralai: 'mistral',
   elevenlabs: 'elevenlabs',
   '@elevenlabs/elevenlabs-js': 'elevenlabs',
+  'cohere-ai': 'cohere',
+  cohere: 'cohere',
+  'together-ai': 'together',
+  '@together-ai/sdk': 'together',
+  '@deepgram/sdk': 'deepgram',
+  assemblyai: 'assemblyai',
+  '@fal-ai/client': 'falai',
+  '@fal-ai/serverless-client': 'falai',
 
   // Payments
   stripe: 'stripe',
@@ -29,6 +37,9 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   '@revenuecat/purchases-capacitor': 'revenuecat',
   '@paddle/paddle-js': 'paddle',
   'paddle-js': 'paddle',
+  '@lemonsqueezy/lemonsqueezy.js': 'lemonsqueezy',
+  plaid: 'plaid',
+  '@mollie/api-client': 'mollie',
 
   // DevTools
   '@octokit/rest': 'github',
@@ -50,6 +61,10 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   firebase_admin: 'firebase',
   '@planetscale/database': 'planetscale',
   '@neondatabase/serverless': 'neon',
+  mongodb: 'mongodb',
+  mongoose: 'mongodb',
+  '@libsql/client': 'turso',
+  convex: 'convex',
   '@upstash/redis': 'upstash',
   '@upstash/ratelimit': 'upstash',
   '@upstash/vector': 'upstash',
@@ -65,6 +80,10 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   '@clerk/clerk-react': 'clerk',
   '@clerk/backend': 'clerk',
   '@clerk/express': 'clerk',
+  '@okta/okta-auth-js': 'okta',
+  '@okta/oidc-middleware': 'okta',
+  stytch: 'stytch',
+  '@stytch/vanilla-js': 'stytch',
 
   // Communication
   resend: 'resend',
@@ -74,6 +93,11 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   twilio: 'twilio',
   postmark: 'postmark',
   '@postmark/postmark': 'postmark',
+  'mailgun.js': 'mailgun',
+  'mailgun-js': 'mailgun',
+  pusher: 'pusher',
+  'pusher-js': 'pusher',
+  ably: 'ably',
   '@slack/web-api': 'slack',
   '@slack/bolt': 'slack',
   'slack-sdk': 'slack',
@@ -95,7 +119,33 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   'dd-trace': 'datadog',
   'datadog-metrics': 'datadog',
 
+  // Analytics
+  'posthog-js': 'posthog',
+  'posthog-node': 'posthog',
+  mixpanel: 'mixpanel',
+  'mixpanel-browser': 'mixpanel',
+  '@amplitude/analytics-browser': 'amplitude',
+  '@amplitude/node': 'amplitude',
+  '@segment/analytics-node': 'segment',
+  'analytics-node': 'segment',
+  '@segment/analytics-next': 'segment',
+
+  // Media & Storage
+  '@mux/mux-node': 'mux',
+  '@mux/mux-player-react': 'mux',
+  cloudinary: 'cloudinary',
+  '@cloudinary/url-gen': 'cloudinary',
+  'mapbox-gl': 'mapbox',
+  '@mapbox/mapbox-sdk': 'mapbox',
+
   // Cloud
+  'aws-sdk': 'aws',
+  '@aws-sdk/client-s3': 'aws',
+  '@aws-sdk/client-lambda': 'aws',
+  '@google-cloud/storage': 'gcp',
+  '@google-cloud/firestore': 'gcp',
+  '@azure/storage-blob': 'azure',
+  '@azure/identity': 'azure',
   netlify: 'netlify',
   '@netlify/functions': 'netlify',
 
