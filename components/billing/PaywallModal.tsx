@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { X, Loader2, AlertCircle } from 'lucide-react'
 import { getPurchases, ErrorCode } from '@/lib/revenuecat-client'
 import { PurchasesError, type CustomerInfo } from '@revenuecat/purchases-js'
+import { useRevenueCat } from '@/components/billing/RevenueCatProvider'
 
 interface Props {
   isOpen: boolean
@@ -15,9 +16,10 @@ export default function PaywallModal({ isOpen, onClose, onSuccess }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const { isLoading: rcLoading } = useRevenueCat()
 
   useEffect(() => {
-    if (!isOpen || !containerRef.current) return
+    if (!isOpen || !containerRef.current || rcLoading) return
 
     setStatus('loading')
     setErrorMsg(null)
@@ -64,7 +66,7 @@ export default function PaywallModal({ isOpen, onClose, onSuccess }: Props) {
     return () => {
       cancelled = true
     }
-  }, [isOpen, onClose, onSuccess])
+  }, [isOpen, rcLoading, onClose, onSuccess])
 
   if (!isOpen) return null
 
