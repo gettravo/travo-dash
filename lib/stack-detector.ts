@@ -12,6 +12,12 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   replicate: 'replicate',
   openrouter: 'openrouter',
   '@openrouter/ai-sdk-provider': 'openrouter',
+  groq: 'groq',
+  'groq-sdk': 'groq',
+  '@mistralai/mistralai': 'mistral',
+  mistralai: 'mistral',
+  elevenlabs: 'elevenlabs',
+  '@elevenlabs/elevenlabs-js': 'elevenlabs',
 
   // Payments
   stripe: 'stripe',
@@ -19,6 +25,10 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   'paypal-rest-sdk': 'paypal',
   '@paypal/checkout-server-sdk': 'paypal',
   paypalrestsdk: 'paypal',
+  'react-native-purchases': 'revenuecat',
+  '@revenuecat/purchases-capacitor': 'revenuecat',
+  '@paddle/paddle-js': 'paddle',
+  'paddle-js': 'paddle',
 
   // DevTools
   '@octokit/rest': 'github',
@@ -51,6 +61,10 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   auth0: 'auth0',
   'auth0-python': 'auth0',
   'python-jose': 'auth0',
+  '@clerk/nextjs': 'clerk',
+  '@clerk/clerk-react': 'clerk',
+  '@clerk/backend': 'clerk',
+  '@clerk/express': 'clerk',
 
   // Communication
   resend: 'resend',
@@ -58,6 +72,8 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   '@sendgrid/client': 'sendgrid',
   sendgrid: 'sendgrid',
   twilio: 'twilio',
+  postmark: 'postmark',
+  '@postmark/postmark': 'postmark',
   '@slack/web-api': 'slack',
   '@slack/bolt': 'slack',
   'slack-sdk': 'slack',
@@ -65,6 +81,23 @@ const PACKAGE_SLUG_MAP: Record<string, string> = {
   'discord-api-types': 'discord',
   'discord.py': 'discord',
   'discord-py': 'discord',
+
+  // Search
+  algoliasearch: 'algolia',
+  '@algolia/client-search': 'algolia',
+  '@pinecone-database/pinecone': 'pinecone',
+
+  // Monitoring
+  '@sentry/node': 'sentry',
+  '@sentry/react': 'sentry',
+  '@sentry/nextjs': 'sentry',
+  '@sentry/browser': 'sentry',
+  'dd-trace': 'datadog',
+  'datadog-metrics': 'datadog',
+
+  // Cloud
+  netlify: 'netlify',
+  '@netlify/functions': 'netlify',
 
   // Productivity
   '@notionhq/client': 'notion',
