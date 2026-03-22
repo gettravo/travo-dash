@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { type CustomerInfo } from '@revenuecat/purchases-js'
-import { initializePurchases, getPurchases, isProActive } from '@/lib/revenuecat-client'
+import { initializePurchases, isProActive } from '@/lib/revenuecat-client'
 
 interface RevenueCatContextValue {
   customerInfo: CustomerInfo | null
@@ -36,13 +36,14 @@ export function RevenueCatProvider({
   const [isLoading, setIsLoading] = useState(true)
 
   const refreshCustomerInfo = useCallback(async () => {
+    if (!userId) return
     try {
-      const info = await getPurchases().getCustomerInfo()
+      const info = await initializePurchases(userId)
       setCustomerInfo(info)
     } catch (err) {
       console.error('[RevenueCat] getCustomerInfo failed:', err)
     }
-  }, [])
+  }, [userId])
 
   useEffect(() => {
     if (!userId) return
