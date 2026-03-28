@@ -76,19 +76,9 @@ export async function getApiDetail(slug: string) {
   const since7d = new Date(Date.now() - UPTIME_HOURS_7D * 60 * 60 * 1000)
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
 
-  // All queries in parallel — 4 total instead of 5+
-  const [uptimeRows, metrics24h, incidents, allMetrics90d] = await Promise.all([
-    prisma.$queryRaw<UptimeRow[]>(Prisma.sql`
-      SELECT
-        "apiId",
-        COUNT(*)::bigint                                          AS total,
-        SUM(CASE WHEN success = true THEN 1 ELSE 0 END)::bigint  AS successful
-      FROM "Metric"
-      WHERE "apiId" = ${api.id}
-        AND timestamp >= ${since7d}
-      GROUP BY "apiId", (timestamp >= ${since24h})
-      -- returns up to 2 rows: one for 24h window, one for 7d-only window
-    `),
+  // Use raw SQL to get daily aggregates for the 90-day chart
+  // This reduces the returned data from ~20,000 rows to 90 rows.
+  const [metrics24h, incidents, dailyStats] = await Promise.all([
     prisma.metric.findMany({
       where: { apiId: api.id, timestamp: { gte: since24h } },
       orderBy: { timestamp: 'asc' },
@@ -98,34 +88,39 @@ export async function getApiDetail(slug: string) {
       orderBy: { startedAt: 'desc' },
       take: 20,
     }),
-    prisma.metric.findMany({
-      where: { apiId: api.id, timestamp: { gte: ninetyDaysAgo } },
-      select: { timestamp: true, success: true },
-    }),
+    prisma.$queryRaw<Array<{ date: string; total: bigint; successful: bigint }>>(Prisma.sql`
+      SELECT
+        TO_CHAR(timestamp, 'YYYY-MM-DD') as date,
+        COUNT(*)::bigint as total,
+        SUM(CASE WHEN success = true THEN 1 ELSE 0 END)::bigint as successful
+      FROM "Metric"
+      WHERE "apiId" = ${api.id} AND timestamp >= ${ninetyDaysAgo}
+      GROUP BY TO_CHAR(timestamp, 'YYYY-MM-DD')
+      ORDER BY date ASC
+    `),
   ])
 
-  // Compute uptime from metrics directly (avoids needing the complex grouped query above)
-  const calc = (metrics: Array<{ success: boolean }>) =>
-    metrics.length === 0 ? null : (metrics.filter((m) => m.success).length / metrics.length) * 100
+  const calc = (total: bigint, successful: bigint) =>
+    Number(total) === 0 ? null : (Number(successful) / Number(total)) * 100
 
-  const metrics7d = allMetrics90d.filter((m) => m.timestamp >= since7d)
-  const uptime24h = calc(metrics24h)
-  const uptime7d = calc(metrics7d)
+  // Calculate 24h and 7d uptime from dailyStats to avoid extra queries
+  const stats24h = dailyStats.find(s => s.date === new Date().toISOString().split('T')[0])
+  const uptime24h = stats24h ? calc(stats24h.total, stats24h.successful) : null
 
-  // suppress unused var from raw query (kept for future use)
-  void uptimeRows
+  const stats7d = dailyStats.filter(s => new Date(s.date) >= since7d)
+  const total7d = stats7d.reduce((acc, s) => acc + s.total, BigInt(0))
+  const successful7d = stats7d.reduce((acc, s) => acc + s.successful, BigInt(0))
+  const uptime7d = calc(total7d, successful7d)
 
-  // 90-day daily uptime buckets — computed in-memory from already-fetched data
+  // Fill in gaps for the 90-day daily buckets
   const dailyBuckets: Array<{ date: string; uptime: number | null }> = []
   for (let i = 89; i >= 0; i--) {
-    const dayStart = new Date(Date.now() - (i + 1) * 24 * 60 * 60 * 1000)
-    const dayEnd = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-    const dayMetrics = allMetrics90d.filter(
-      (m) => m.timestamp >= dayStart && m.timestamp < dayEnd
-    )
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+    const dateStr = d.toISOString().split('T')[0]
+    const stat = dailyStats.find(s => s.date === dateStr)
     dailyBuckets.push({
-      date: dayStart.toISOString().split('T')[0],
-      uptime: calc(dayMetrics),
+      date: dateStr,
+      uptime: stat ? calc(stat.total, stat.successful) : null,
     })
   }
 
